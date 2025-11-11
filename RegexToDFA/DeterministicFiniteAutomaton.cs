@@ -2,32 +2,58 @@
 
 public class DeterministicFiniteAutomaton
 {
-    // Membrii clasei: Q, Σ, δ, q0, F
-    public HashSet<string> States { get; set; }
-    public HashSet<char> Alphabet { get; set; }
-    public Dictionary<Tuple<string, char>, string> Transitions { get; set; }
-    public string StartState { get; set; }
-    public HashSet<string> FinalStates { get; set; }
+    private HashSet<string> _states;
+    private HashSet<char> _alphabet;
+    private Dictionary<Tuple<string, char>, string> _transitions;
+    private string _startState;
+    private HashSet<string> _finalStates;
+
+    public HashSet<string> States 
+    { 
+        get => _states; 
+        set => _states = value; 
+    }
+    
+    public HashSet<char> Alphabet 
+    { 
+        get => _alphabet; 
+        set => _alphabet = value; 
+    }
+    
+    public Dictionary<Tuple<string, char>, string> Transitions 
+    { 
+        get => _transitions; 
+        set => _transitions = value; 
+    }
+    
+    public string StartState 
+    { 
+        get => _startState; 
+        set => _startState = value; 
+    }
+    
+    public HashSet<string> FinalStates 
+    { 
+        get => _finalStates; 
+        set => _finalStates = value; 
+    }
 
     public DeterministicFiniteAutomaton()
     {
-        States = new HashSet<string>();
-        Alphabet = new HashSet<char>();
-        Transitions = new Dictionary<Tuple<string, char>, string>();
-        FinalStates = new HashSet<string>();
-        StartState = string.Empty;
+        _states = new HashSet<string>();
+        _alphabet = new HashSet<char>();
+        _transitions = new Dictionary<Tuple<string, char>, string>();
+        _finalStates = new HashSet<string>();
+        _startState = string.Empty;
     }
 
-    // Metoda pentru verificarea validității automatului
     public bool VerifyAutomaton()
     {
-        // 1. Starea inițială q0 aparține mulțimii Q
         if (string.IsNullOrEmpty(StartState) || !States.Contains(StartState))
         {
             return false;
         }
 
-        // 2. Toate stările finale F se află în Q
         foreach (var finalState in FinalStates)
         {
             if (!States.Contains(finalState))
@@ -36,7 +62,6 @@ public class DeterministicFiniteAutomaton
             }
         }
 
-        // 3. Funcția de tranziție conține doar simboluri din Σ și stări din Q
         foreach (var transition in Transitions)
         {
             var (state, symbol) = transition.Key;
@@ -51,12 +76,10 @@ public class DeterministicFiniteAutomaton
         return true;
     }
 
-    // Metoda pentru afișarea tabelului de tranziții
     public string PrintAutomaton()
     {
         StringBuilder sb = new StringBuilder();
         
-        // Header (Alfabetul)
         sb.Append("Stare\t| ");
         foreach (char symbol in Alphabet)
         {
@@ -65,10 +88,8 @@ public class DeterministicFiniteAutomaton
         sb.AppendLine();
         sb.AppendLine(new string('-', (Alphabet.Count + 1) * 8));
 
-        // Rânduri (Stările)
         foreach (string state in States)
         {
-            // Marchează starea inițială și finală
             string stateLabel = state;
             if (state == StartState) stateLabel = "->" + stateLabel;
             if (FinalStates.Contains(state)) stateLabel = stateLabel + "*";
@@ -84,7 +105,7 @@ public class DeterministicFiniteAutomaton
                 }
                 else
                 {
-                    sb.Append("-\t| "); // Fără tranziție
+                    sb.Append("-\t| ");
                 }
             }
             sb.AppendLine();
@@ -96,17 +117,15 @@ public class DeterministicFiniteAutomaton
         return sb.ToString();
     }
 
-    // Metoda pentru verificarea unui cuvânt
     public bool CheckWord(string word)
     {
         string currentState = StartState;
 
         foreach (char symbol in word)
         {
-            // Verifică dacă simbolul este în alfabet
             if (!Alphabet.Contains(symbol))
             {
-                return false; // Respins (simbol necunoscut)
+                return false;
             }
 
             var transitionKey = Tuple.Create(currentState, symbol);
@@ -116,11 +135,10 @@ public class DeterministicFiniteAutomaton
             }
             else
             {
-                return false; // Respins (tranziție blocată)
+                return false;
             }
         }
 
-        // Acceptat doar dacă starea curentă este o stare finală
         return FinalStates.Contains(currentState);
     }
 }
