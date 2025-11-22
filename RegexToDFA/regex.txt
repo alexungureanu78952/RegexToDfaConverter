@@ -1,2 +1,1 @@
-﻿aba(aa|bb)*c(ab)*
-
+﻿(ab|ba)*a

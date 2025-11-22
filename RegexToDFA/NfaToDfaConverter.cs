@@ -8,7 +8,7 @@
         var dfaStatesMap = new Dictionary<HashSet<string>, string>(HashSet<string>.CreateSetComparer());
         var worklist = new Queue<HashSet<string>>();
 
-        HashSet<string> nfaStartStateSet = EpsilonClosure(new HashSet<string> { nfa.StartState }, nfa);
+        HashSet<string> nfaStartStateSet = LambdaClosure(new HashSet<string> { nfa.StartState }, nfa);
         string dfaStartState = "Q0";
 
         dfa.StartState = dfaStartState;
@@ -31,7 +31,7 @@
             foreach (char symbol in dfa.Alphabet)
             {
                 HashSet<string> moveSet = Move(currentNfaStates, symbol, nfa);
-                HashSet<string> nextNfaStatesSet = EpsilonClosure(moveSet, nfa);
+                HashSet<string> nextNfaStatesSet = LambdaClosure(moveSet, nfa);
 
                 if (nextNfaStatesSet.Count == 0)
                 {
@@ -54,7 +54,7 @@
         return dfa;
     }
 
-    private HashSet<string> EpsilonClosure(HashSet<string> states, NondeterministicFiniteAutomaton nfa)
+    private HashSet<string> LambdaClosure(HashSet<string> states, NondeterministicFiniteAutomaton nfa)
     {
         var closure = new HashSet<string>(states);
         var queue = new Queue<string>(states);
@@ -63,10 +63,10 @@
         {
             string state = queue.Dequeue();
 
-            var epsilonKey = Tuple.Create(state, (char?)null);
-            if (nfa.Transitions.ContainsKey(epsilonKey))
+            var lambdaKey = Tuple.Create(state, (char?)null);
+            if (nfa.Transitions.ContainsKey(lambdaKey))
             {
-                foreach (string nextState in nfa.Transitions[epsilonKey])
+                foreach (string nextState in nfa.Transitions[lambdaKey])
                 {
                     if (!closure.Contains(nextState))
                     {
